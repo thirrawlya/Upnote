@@ -1,11 +1,21 @@
-# Gunakan image PHP dengan server bawaan
-FROM php:8.1-cli
+# Gunakan image PHP dengan Apache
+FROM php:8.1-apache
 
-# Set working directory ke dalam folder cmnotes
-WORKDIR /var/www/html/cmnotes
+# Install ekstensi MySQL untuk koneksi ke database
+RUN docker-php-ext-install pdo pdo_mysql
 
-# Copy semua file proyek ke dalam container
+# Set working directory ke dalam container
+WORKDIR /var/www/html
+
+# Copy semua file proyek ke dalam folder kerja
 COPY . /var/www/html
 
-# Jalankan PHP server
-CMD php -S 0.0.0.0:10000 -t /var/www/html/cmnotes
+# Beri izin ke folder yang diperlukan
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
+
+# Expose port 80 untuk akses ke server
+EXPOSE 80
+
+# Jalankan Apache
+CMD ["apache2-foreground"]
